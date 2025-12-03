@@ -8,14 +8,14 @@ USE estudiantes_andap;
 
 -- Crear tabla estudiante
 CREATE TABLE estudiante (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
     edad INT NOT NULL
 );
 
 -- Crear tabla programa
 CREATE TABLE programa (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nombre_curso VARCHAR(100) NOT NULL
 );
 
