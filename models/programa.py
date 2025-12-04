@@ -24,10 +24,15 @@ class Programa:
         db = ConexionBD().conectar()
         cursor = db.cursor()
 
-        consulta = "SELECT id, nombre_programa FROM programa"
+        consulta = """
+            SELECT id, nombre_programa, descripcion 
+            FROM programa
+        """
+
         cursor.execute(consulta)
 
         resultados = cursor.fetchall()
 
         cursor.close()
+
         return resultados

@@ -68,12 +68,17 @@ class Estudiante:
         db = ConexionBD().conectar()
         cursor = db.cursor()
 
-        consulta = "SELECT id, nombre, edad FROM estudiante"
+        consulta = """
+            SELECT id, nombre, apellido, edad, genero 
+            FROM estudiante
+        """
+
         cursor.execute(consulta)
 
         resultados = cursor.fetchall()
 
         cursor.close()
+
         return resultados
 
     # Listar estudiantes mayores de 18
