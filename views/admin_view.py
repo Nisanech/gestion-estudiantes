@@ -11,7 +11,7 @@ class AdminView:
         self.usuario = usuario
 
         self.root.title("Panel Administrador")
-        self.root.geometry("1000x650")
+        self.root.geometry("1200x1000")
         
         # Paleta de Colores
         self.bg_color = "#F8FAFC"
@@ -60,7 +60,7 @@ class AdminView:
         ).pack(anchor="w", pady=(5, 0))
         
         # Botón de cerrar sesión
-        btn_logout = tk.Button(
+        btn_cerrar_sesion = tk.Button(
             header_content,
             text="Cerrar Sesión",
             command=self.cerrar_sesion,
@@ -74,27 +74,27 @@ class AdminView:
             padx=20,
             pady=8
         )
-        btn_logout.pack(side="right")
+        btn_cerrar_sesion.pack(side="right")
 
         # Efectos hover para el botón
-        btn_logout.bind("<Enter>", lambda e: btn_logout.config(bg="#DC2626"))
-        btn_logout.bind("<Leave>", lambda e: btn_logout.config(bg="#EF4444"))
+        btn_cerrar_sesion.bind("<Enter>", lambda e: btn_cerrar_sesion.config(bg="#DC2626"))
+        btn_cerrar_sesion.bind("<Leave>", lambda e: btn_cerrar_sesion.config(bg="#EF4444"))
         
         # -------- CONTENEDOR PRINCIPAL --------
-        main_container = tk.Frame(self.root, bg=self.bg_color)
-        main_container.pack(fill="both", expand=True, padx=20, pady=20)
+        contenedor_principal = tk.Frame(self.root, bg=self.bg_color)
+        contenedor_principal.pack(fill="both", expand=True, padx=20, pady=20)
         
         # Configurar estilos para el Notebook
-        style = ttk.Style()
-        style.theme_use('clam')
+        estilos_notebook = ttk.Style()
+        estilos_notebook.theme_use('clam')
         
         # Estilo para las pestañas
-        style.configure(
+        estilos_notebook.configure(
             "Custom.TNotebook",
             background=self.bg_color,
             borderwidth=0
         )
-        style.configure(
+        estilos_notebook.configure(
             "Custom.TNotebook.Tab",
             background=self.card_bg,
             foreground=self.text_color,
@@ -103,7 +103,7 @@ class AdminView:
             borderwidth=1,
             relief="solid"
         )
-        style.map(
+        estilos_notebook.map(
             "Custom.TNotebook.Tab",
             background=[("selected", self.primary_color)],
             foreground=[("selected", "white")],
@@ -111,7 +111,7 @@ class AdminView:
         )
         
         # Estilo para Treeview
-        style.configure(
+        estilos_notebook.configure(
             self.estilo_treeview,
             background=self.card_bg,
             foreground=self.text_color,
@@ -120,7 +120,7 @@ class AdminView:
             font=(self.font, 10),
             rowheight=30
         )
-        style.configure(
+        estilos_notebook.configure(
             "Custom.Treeview.Heading",
             background=self.primary_color,
             foreground="white",
@@ -128,28 +128,288 @@ class AdminView:
             borderwidth=0,
             relief="flat"
         )
-        style.map(
+        estilos_notebook.map(
             self.estilo_treeview,
             background=[("selected", self.primary_color)],
             foreground=[("selected", "white")]
         )
         
         # Notebook con pestañas
-        notebook = ttk.Notebook(main_container, style="Custom.TNotebook")
+        notebook = ttk.Notebook(contenedor_principal, style="Custom.TNotebook")
         notebook.pack(fill="both", expand=True)
 
         # -------- TAB ESTUDIANTES --------
         tab_estudiante = tk.Frame(notebook, bg=self.card_bg)
         notebook.add(tab_estudiante, text="📚 Estudiantes")
 
+        # -------- FORMULARIO CREAR ESTUDIANTE --------
+        formulario_estudiante_frame = tk.Frame(tab_estudiante, bg=self.card_bg)
+        formulario_estudiante_frame.pack(fill="x", padx=15, pady=15)
+        
+        # Título del formulario
+        tk.Label(
+            formulario_estudiante_frame,
+            text="Crear Nuevo Estudiante",
+            font=(self.font, 14, "bold"),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w", pady=(0, 15))
+        
+        # -------- DATOS DE USUARIO --------
+        datos_usuario_frame = tk.Frame(formulario_estudiante_frame, bg=self.card_bg)
+        datos_usuario_frame.pack(fill="x", pady=(0, 15))
+        
+        tk.Label(
+            datos_usuario_frame,
+            text="Datos de Usuario",
+            font=(self.font, 11, "bold"),
+            fg=self.primary_color,
+            bg=self.card_bg
+        ).pack(anchor="w", pady=(0, 10))
+        
+        # Contenedor para campos del formulario - Usuario
+        campos_form_usuario_frame = tk.Frame(datos_usuario_frame, bg=self.card_bg)
+        campos_form_usuario_frame.pack(fill="x")
+        
+        # Campo Correo
+        correo_container = tk.Frame(campos_form_usuario_frame, bg=self.card_bg)
+        correo_container.pack(side="left", padx=(0, 15), expand=True, fill="x")
+        
+        tk.Label(
+            correo_container,
+            text="Correo Electrónico:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+        
+        self.entry_correo = tk.Entry(
+            correo_container,
+            font=(self.font, 10),
+            bg=self.card_bg,
+            fg=self.text_color,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            highlightcolor=self.primary_color
+        )
+        self.entry_correo.pack(fill="x", ipady=5)
+        
+        # Campo Password
+        password_container = tk.Frame(campos_form_usuario_frame, bg=self.card_bg)
+        password_container.pack(side="left", padx=(0, 15), expand=True, fill="x")
+        
+        tk.Label(
+            password_container,
+            text="Contraseña:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+        
+        self.entry_password = tk.Entry(
+            password_container,
+            font=(self.font, 10),
+            bg=self.card_bg,
+            fg=self.text_color,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            highlightcolor=self.primary_color,
+            show="*"
+        )
+        self.entry_password.pack(fill="x", ipady=5)
+        
+        # Campo Rol
+        rol_container = tk.Frame(campos_form_usuario_frame, bg=self.card_bg)
+        rol_container.pack(side="left", expand=True, fill="x")
+        
+        tk.Label(
+            rol_container,
+            text="Rol:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+        
+        self.entry_rol = tk.Entry(
+            rol_container,
+            font=(self.font, 10),
+            bg="#F1F5F9",
+            fg=self.text_light,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            state="readonly"
+        )
+        self.entry_rol.pack(fill="x", ipady=5)
+
+        # Insertar valor por defecto
+        self.entry_rol.config(state="normal")
+        self.entry_rol.insert(0, "estudiante")
+        self.entry_rol.config(state="readonly")
+        
+        # -------- DATOS DEL ESTUDIANTE --------
+        datos_estudiante_frame = tk.Frame(formulario_estudiante_frame, bg=self.card_bg)
+        datos_estudiante_frame.pack(fill="x", pady=(0, 15))
+        
+        tk.Label(
+            datos_estudiante_frame,
+            text="Datos del Estudiante",
+            font=(self.font, 11, "bold"),
+            fg=self.primary_color,
+            bg=self.card_bg
+        ).pack(anchor="w", pady=(0, 10))
+        
+        # Contenedor para campos del formulario - Estudiante
+        campos_form_estudiante_frame = tk.Frame(datos_estudiante_frame, bg=self.card_bg)
+        campos_form_estudiante_frame.pack(fill="x")
+        
+        # Campo Nombre
+        nombre_container = tk.Frame(campos_form_estudiante_frame, bg=self.card_bg)
+        nombre_container.pack(side="left", padx=(0, 15), expand=True, fill="x")
+        
+        tk.Label(
+            nombre_container,
+            text="Nombre:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+        
+        self.entry_nombre = tk.Entry(
+            nombre_container,
+            font=(self.font, 10),
+            bg=self.card_bg,
+            fg=self.text_color,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            highlightcolor=self.primary_color
+        )
+        self.entry_nombre.pack(fill="x", ipady=5)
+        
+        # Campo Apellido
+        apellido_container = tk.Frame(campos_form_estudiante_frame, bg=self.card_bg)
+        apellido_container.pack(side="left", padx=(0, 15), expand=True, fill="x")
+        
+        tk.Label(
+            apellido_container,
+            text="Apellido:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+        
+        self.entry_apellido = tk.Entry(
+            apellido_container,
+            font=(self.font, 10),
+            bg=self.card_bg,
+            fg=self.text_color,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            highlightcolor=self.primary_color
+        )
+        self.entry_apellido.pack(fill="x", ipady=5)
+        
+        # Campo Edad
+        edad_container = tk.Frame(campos_form_estudiante_frame, bg=self.card_bg)
+        edad_container.pack(side="left", padx=(0, 15), expand=True, fill="x")
+        
+        tk.Label(
+            edad_container,
+            text="Edad:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+        
+        self.entry_edad = tk.Entry(
+            edad_container,
+            font=(self.font, 10),
+            bg=self.card_bg,
+            fg=self.text_color,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            highlightcolor=self.primary_color
+        )
+        self.entry_edad.pack(fill="x", ipady=5)
+        
+        # Campo Género
+        genero_container = tk.Frame(campos_form_estudiante_frame, bg=self.card_bg)
+        genero_container.pack(side="left", expand=True, fill="x")
+        
+        tk.Label(
+            genero_container,
+            text="Género:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+        
+        # Estilo para el Combobox
+        estilos_notebook.configure(
+            "Custom.TCombobox",
+            fieldbackground=self.card_bg,
+            background=self.card_bg,
+            foreground=self.text_color,
+            borderwidth=1,
+            relief="solid"
+        )
+        
+        self.combo_genero = ttk.Combobox(
+            genero_container,
+            values=["F", "M", "Otro"],
+            font=(self.font, 10),
+            state="readonly",
+            style="Custom.TCombobox"
+        )
+        self.combo_genero.pack(fill="x", ipady=5)
+        self.combo_genero.set("F")  # Valor por defecto
+        
+        # Botón Guardar
+        btn_guardar_frame = tk.Frame(formulario_estudiante_frame, bg=self.card_bg)
+        btn_guardar_frame.pack(fill="x", pady=(10, 0))
+        
+        btn_guardar = tk.Button(
+            btn_guardar_frame,
+            text="Guardar Estudiante",
+            font=(self.font, 11, "bold"),
+            bg=self.primary_color,
+            fg="white",
+            activebackground=self.primary_hover,
+            activeforeground="white",
+            relief="flat",
+            cursor="hand2",
+            padx=30,
+            pady=10
+        )
+        btn_guardar.pack(side="left")
+        
+        # Efectos hover para el botón
+        btn_guardar.bind("<Enter>", lambda e: btn_guardar.config(bg=self.primary_hover))
+        btn_guardar.bind("<Leave>", lambda e: btn_guardar.config(bg=self.primary_color))
+        
+        # Separador visual
+        separator = tk.Frame(tab_estudiante, bg=self.border_color, height=2)
+        separator.pack(fill="x", padx=15, pady=(0, 15))
+
         cols_estudiante = ("ID", "Nombre", "Apellido", "Edad", "Género")
 
         # Frame para la tabla con borde
-        table_frame_est = tk.Frame(tab_estudiante, bg=self.border_color, padx=1, pady=1)
-        table_frame_est.pack(fill="both", expand=True, padx=15, pady=15)
+        tabla_estudiantes_frame = tk.Frame(tab_estudiante, bg=self.border_color, padx=1, pady=1)
+        tabla_estudiantes_frame.pack(fill="both", expand=True, padx=15, pady=(0, 15))
         
         self.tree_estudiantes = ttk.Treeview(
-            table_frame_est,
+            tabla_estudiantes_frame,
             columns=cols_estudiante,
             show="headings",
             style=self.estilo_treeview
@@ -160,7 +420,7 @@ class AdminView:
             self.tree_estudiantes.column(col, width=150, anchor="center")
 
         # Scrollbar para estudiantes
-        scrollbar_est = ttk.Scrollbar(table_frame_est, orient="vertical", command=self.tree_estudiantes.yview)
+        scrollbar_est = ttk.Scrollbar(tabla_estudiantes_frame, orient="vertical", command=self.tree_estudiantes.yview)
         self.tree_estudiantes.configure(yscrollcommand=scrollbar_est.set)
         scrollbar_est.pack(side="right", fill="y")
         
@@ -179,11 +439,11 @@ class AdminView:
         cols_programa = ("ID", "Programa", "Descripción")
 
         # Frame para la tabla con borde
-        table_frame_prog = tk.Frame(tab_programa, bg=self.border_color, padx=1, pady=1)
-        table_frame_prog.pack(fill="both", expand=True, padx=15, pady=15)
+        tabla_programas_frame = tk.Frame(tab_programa, bg=self.border_color, padx=1, pady=1)
+        tabla_programas_frame.pack(fill="both", expand=True, padx=15, pady=15)
         
         self.tree_programas = ttk.Treeview(
-            table_frame_prog,
+            tabla_programas_frame,
             columns=cols_programa,
             show="headings",
             style=self.estilo_treeview
@@ -197,7 +457,7 @@ class AdminView:
                 self.tree_programas.column(col, width=150, anchor="center")
 
         # Scrollbar para programas
-        scrollbar_prog = ttk.Scrollbar(table_frame_prog, orient="vertical", command=self.tree_programas.yview)
+        scrollbar_prog = ttk.Scrollbar(tabla_programas_frame, orient="vertical", command=self.tree_programas.yview)
         self.tree_programas.configure(yscrollcommand=scrollbar_prog.set)
         scrollbar_prog.pack(side="right", fill="y")
         
