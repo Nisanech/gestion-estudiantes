@@ -6,62 +6,61 @@ from bd.conexion import ConexionBD
 
 
 class Estudiante:
-    def __init__(self, id=None, nombre=None, edad=None):
-        """
-            Constructor de la clase que inicializa un objeto Estudiante.
-            Funcionamiento:
-                Inicializa los atributos del estudiante
-                Establece automáticamente la conexión a la base de datos mediante ConexionBD()
-        """
-
-        # Atributos de Instancia
-        self.id = id  # Identificador único del estudiante (autoincremental)
-        self.nombre = nombre  # Nombre completo del estudiante
-        self.edad = edad  # Edad del estudiante
-        self.db = ConexionBD().conectar()  # Conexión activa a la base de datos
-
     # Crear nuevo estudiante
-    def crear(self):
+    @staticmethod
+    def crear(usuario_id, nombre, apellido, edad, genero):
         """
-            Inserta un nuevo estudiante en la base de datos.
+            Crea un nuevo estudiante vinculado a un usuario existente.
+            Decorador: @staticmethod - No requiere instancia de la clase
+            Parámetros:
+                usuario_id (int): ID del usuario al que pertenece el estudiante
+                nombre (str): Nombre del estudiante
+                apellido (str): Apellido del estudiante
+                edad (int): Edad del estudiante
+                genero (str): Género del estudiante
             Retorna:
-                int: ID del estudiante recién creado (autoincremental de la base de datos)
+                int: ID del estudiante recién creado
             Funcionamiento:
-                Crea un cursor para ejecutar la consulta
-                Prepara la consulta INSERT con parámetros
-                Ejecuta la consulta con los valores del estudiante
-                Confirma la transacción con commit()
+                Establece conexión a la base de datos
+                Crea un cursor
+                Prepara consulta INSERT con los datos del estudiante
+                Ejecuta la inserción
+                Confirma la transacción
                 Obtiene el ID generado automáticamente
                 Cierra el cursor
-                Retorna el ID del nuevo estudiante
+                Retorna el ID del estudiante
         """
-        cursor = self.db.cursor()
+        db = ConexionBD().conectar()
+        cursor = db.cursor()
 
-        consulta = "INSERT INTO estudiante (nombre, edad) VALUES (%s, %s)"
-        valores = (self.nombre, self.edad)
+        consulta = """
+            INSERT INTO estudiante (usuario_id, nombre, apellido, edad, genero) 
+            VALUES (%s, %s, %s, %s, %s)"""
+        valores = (usuario_id, nombre, apellido, edad, genero)
 
         cursor.execute(consulta, valores)
 
-        self.db.commit()
-        self.id = cursor.lastrowid
+        db.commit()
+
+        estudiante_id = cursor.lastrowid
 
         cursor.close()
 
-        return self.id
+        return estudiante_id
 
     # Listar todos los estudiantes
     @staticmethod
     def listar():
         """
-            Obtiene todos los estudiantes registrados en la base de datos.
+            Obtiene todos los estudiantes con información de sus usuarios mediante JOIN.
             Decorador: @staticmethod - No requiere instancia de la clase
             Retorna:
-                list[tuple]: Lista de tuplas con formato (id, nombre, edad) de todos los estudiantes
+                list[tuple]: Lista de tuplas con formato (correo, nombre, apellido, edad, genero)
             Funcionamiento:
                 Establece conexión a la base de datos
                 Crea un cursor
-                Ejecuta consulta SELECT para obtener todos los registros
-                Recupera todos los resultados con fetchall()
+                Ejecuta consulta SELECT con INNER JOIN
+                Recupera todos los resultados
                 Cierra el cursor
                 Retorna la lista de estudiantes
         """
@@ -69,8 +68,9 @@ class Estudiante:
         cursor = db.cursor()
 
         consulta = """
-            SELECT id, nombre, apellido, edad, genero 
-            FROM estudiante
+            SELECT u.correo, e.nombre, e.apellido, e.edad, e.genero 
+            FROM estudiante e
+            INNER JOIN usuario u ON u.id = e.usuario_id
         """
 
         cursor.execute(consulta)

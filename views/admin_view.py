@@ -1,8 +1,9 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 from controllers.estudiante_controller import EstudianteController
 from controllers.programa_controller import ProgramaController
+from controllers.usuario_controller import UsuarioController
 
 
 class AdminView:
@@ -382,6 +383,7 @@ class AdminView:
         btn_guardar = tk.Button(
             btn_guardar_frame,
             text="Guardar Estudiante",
+            command=self.crear_estudiante,
             font=(self.font, 11, "bold"),
             bg=self.primary_color,
             fg="white",
@@ -402,7 +404,7 @@ class AdminView:
         separator = tk.Frame(tab_estudiante, bg=self.border_color, height=2)
         separator.pack(fill="x", padx=15, pady=(0, 15))
 
-        cols_estudiante = ("ID", "Nombre", "Apellido", "Edad", "Género")
+        cols_estudiante = ("Correo", "Nombre", "Apellido", "Edad", "Género")
 
         # Frame para la tabla con borde
         tabla_estudiantes_frame = tk.Frame(tab_estudiante, bg=self.border_color, padx=1, pady=1)
@@ -501,3 +503,32 @@ class AdminView:
         ventana = tk.Tk()
         LoginView(ventana)
         ventana.mainloop()
+
+    def crear_estudiante(self):
+        # Obtener datos del formulario
+        correo = self.entry_correo.get().strip()
+        password = self.entry_password.get().strip()
+        rol = self.entry_rol.get()
+
+        nombre = self.entry_nombre.get().strip()
+        apellido = self.entry_apellido.get().strip()
+        edad = self.entry_edad.get().strip()
+        genero = self.combo_genero.get()
+
+        # Crear usuario
+        usuario_id, error = UsuarioController.crear_usuario(correo, password, rol)
+
+        if error:
+            messagebox.showerror("Error", error)
+            return
+
+        # Crear estudiante asociado al usuario
+        estudiante_id, error = EstudianteController.crear_estudiante(usuario_id, nombre, apellido, edad, genero)
+
+        if error:
+            messagebox.showerror("Error", error)
+            return
+
+        messagebox.showinfo("Éxito", "Estudiante creado correctamente")
+
+        self.cargar_estudiantes()
