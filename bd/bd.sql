@@ -1,14 +1,13 @@
 CREATE DATABASE IF NOT EXISTS estudiantes_andap CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE estudiantes_andap;
 
-
+-- TABLAS GENERALES --
 CREATE TABLE usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     correo VARCHAR(120) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     rol ENUM('admin', 'estudiante') NOT NULL
 );
-
 
 
 CREATE TABLE estudiante (
@@ -21,13 +20,11 @@ CREATE TABLE estudiante (
     FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
 
-
 CREATE TABLE programa (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre_programa VARCHAR(150) NOT NULL,
     descripcion TEXT
 );
-
 
 CREATE TABLE estudiante_programa (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -38,7 +35,6 @@ CREATE TABLE estudiante_programa (
     FOREIGN KEY (estudiante_id) REFERENCES estudiante(id),
     FOREIGN KEY (programa_id) REFERENCES programa(id)
 );
-
 
 -- TEST VOCACIONAL --
 
@@ -64,7 +60,6 @@ CREATE TABLE opcion_respuesta (
     FOREIGN KEY (pregunta_id) REFERENCES pregunta(id)
 );
 
-
 CREATE TABLE respuesta_estudiante (
     id INT PRIMARY KEY AUTO_INCREMENT,
     estudiante_id INT NOT NULL,
@@ -85,7 +80,6 @@ CREATE TABLE afinidad_difusa (
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)
 );
 
-
 CREATE TABLE recomendacion_programa (
     id INT PRIMARY KEY AUTO_INCREMENT,
     estudiante_id INT NOT NULL,
@@ -95,23 +89,23 @@ CREATE TABLE recomendacion_programa (
     FOREIGN KEY (programa_id) REFERENCES programa(id)
 );
 
+-- INSERTAR DATOS --
 
-INSERT INTO estudiante (id, nombre, edad) VALUES
-(1, 'Juan Perez', 20),
-(2, 'Carlos Reina', 48),
-(3, 'Juanita Torres', 16),
-(4, 'Maria DB', 30);
+INSERT INTO usuario (correo, password, rol) VALUES
+('admin@correo.com', 'admin123', 'admin'),
+('estudiante1@correo.com', 'est123', 'estudiante'),
+('estudiante2@correo.com', 'est456', 'estudiante');
 
-INSERT INTO programa (id, nombre_programa) VALUES
-(1, 'Ingeniería de Sistemas'),
-(2, 'Administración'),
-(3, 'Diseño Gráfico');
+INSERT INTO estudiante (usuario_id, nombre, apellido, edad, genero) VALUES
+(2, 'Carlos', 'Ramírez', 19, 'M'),
+(3, 'Laura', 'González', 21, 'F');
 
-INSERT INTO estudiante_programa (estudiante_id, programa_id) VALUES
-(1, 1),
-(1, 2),
-(2, 1),
-(2, 3),
-(3, 3),
-(4, 2),
-(4, 3);
+INSERT INTO programa (nombre_programa, descripcion) VALUES
+('Ingeniería de Software', 'Formación en desarrollo de software, programación, análisis y diseño de sistemas.'),
+('Contabilidad y Finanzas', 'Formación en principios contables, gestión financiera y análisis de estados financieros.'),
+('Diseño Gráfico', 'Programa centrado en creatividad, diseño digital, ilustración y herramientas visuales.'),
+('Administración de Empresas', 'Formación en dirección, gestión, mercadeo y procesos administrativos.'),
+('Sistemas de Información', 'Programa orientado al manejo de datos, infraestructura tecnológica y soporte TI.'),
+('Marketing Digital', 'Formación en estrategias digitales, redes sociales, publicidad online y analítica web.');
+
+
