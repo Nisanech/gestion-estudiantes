@@ -1,55 +1,117 @@
--- Crear la base de datos si no existe
-CREATE DATABASE IF NOT EXISTS estudiantes_andap
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-
--- Usar la base de datos creada
+CREATE DATABASE IF NOT EXISTS estudiantes_andap CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE estudiantes_andap;
 
--- Crear tabla estudiante
+
+CREATE TABLE usuario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    correo VARCHAR(120) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    rol ENUM('admin', 'estudiante') NOT NULL
+);
+
+
+
 CREATE TABLE estudiante (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    usuario_id INT UNIQUE NOT NULL,
     nombre VARCHAR(100) NOT NULL,
-    edad INT NOT NULL
+    apellido VARCHAR(100) NOT NULL,
+    edad INT,
+    genero ENUM('M','F','Otro'),
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
 
--- Crear tabla programa
+
 CREATE TABLE programa (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre_curso VARCHAR(100) NOT NULL
+    nombre_programa VARCHAR(150) NOT NULL,
+    descripcion TEXT
 );
 
--- Crear tabla intermedia para relación muchos-a-muchos
+
 CREATE TABLE estudiante_programa (
-    estudiante_id INT,
-    programa_id INT,
-    PRIMARY KEY (estudiante_id, programa_id),
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    estudiante_id INT NOT NULL,
+    programa_id INT NOT NULL,
+    tipo ENUM('recomendado','interesado','inscrito'),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (estudiante_id) REFERENCES estudiante(id),
     FOREIGN KEY (programa_id) REFERENCES programa(id)
 );
 
-------------------------------------------------------
--- INSERTAR REGISTROS (6 registros en total)
-------------------------------------------------------
 
--- 3 estudiantes
+-- TEST VOCACIONAL --
+
+-- Categorias del test --
+CREATE TABLE categoria (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT
+);
+
+CREATE TABLE pregunta (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    categoria_id INT NOT NULL,
+    texto_pregunta TEXT NOT NULL,
+    FOREIGN KEY (categoria_id) REFERENCES categoria(id)
+);
+
+CREATE TABLE opcion_respuesta (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    pregunta_id INT NOT NULL,
+    texto_opcion VARCHAR(200) NOT NULL,
+    valor_fuzzy DECIMAL(4,3) NOT NULL,   -- 0.000–1.000
+    FOREIGN KEY (pregunta_id) REFERENCES pregunta(id)
+);
+
+
+CREATE TABLE respuesta_estudiante (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    estudiante_id INT NOT NULL,
+    pregunta_id INT NOT NULL,
+    opcion_id INT NOT NULL,
+    valor_fuzzy DECIMAL(4,3) NOT NULL,
+    FOREIGN KEY (estudiante_id) REFERENCES estudiante(id),
+    FOREIGN KEY (pregunta_id) REFERENCES pregunta(id),
+    FOREIGN KEY (opcion_id) REFERENCES opcion_respuesta(id)
+);
+
+CREATE TABLE afinidad_difusa (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    estudiante_id INT NOT NULL,
+    categoria_id INT NOT NULL,
+    nivel_fuzzy DECIMAL(4,3) NOT NULL,
+    FOREIGN KEY (estudiante_id) REFERENCES estudiante(id),
+    FOREIGN KEY (categoria_id) REFERENCES categoria(id)
+);
+
+
+CREATE TABLE recomendacion_programa (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    estudiante_id INT NOT NULL,
+    programa_id INT NOT NULL,
+    puntaje DECIMAL(4,3) NOT NULL,
+    FOREIGN KEY (estudiante_id) REFERENCES estudiante(id),
+    FOREIGN KEY (programa_id) REFERENCES programa(id)
+);
+
+
 INSERT INTO estudiante (id, nombre, edad) VALUES
-(1, 'Juan Pérez', 20),
-(2, 'María Gómez', 22),
-(3, 'Carlos López', 19);
+(1, 'Juan Perez', 20),
+(2, 'Carlos Reina', 48),
+(3, 'Juanita Torres', 16),
+(4, 'Maria DB', 30);
 
--- 3 programas
-INSERT INTO programa (id, nombre_curso) VALUES
+INSERT INTO programa (id, nombre_programa) VALUES
 (1, 'Ingeniería de Sistemas'),
 (2, 'Administración'),
 (3, 'Diseño Gráfico');
 
--- Relación estudiante-programa (muchos a muchos)
--- 6 registros
 INSERT INTO estudiante_programa (estudiante_id, programa_id) VALUES
-(1, 1),  -- Juan → Ing. Sistemas
-(1, 2),  -- Juan → Administración
-(2, 1),  -- María → Ing. Sistemas
-(2, 3),  -- María → Diseño Gráfico
-(3, 2),  -- Carlos → Administración
-(3, 3);  -- Carlos → Diseño Gráfico
+(1, 1),
+(1, 2),
+(2, 1),
+(2, 3),
+(3, 3),
+(4, 2),
+(4, 3);
