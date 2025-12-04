@@ -5,9 +5,9 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from modelos.estudiante import Estudiante
-from modelos.programa import Programa
-from modelos.estudiante_programa import EstudiantePrograma
+from models.estudiante import Estudiante
+from models.programa import Programa
+from models.estudiante_programa import EstudiantePrograma
 
 
 class InterfazApp:
