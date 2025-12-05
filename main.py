@@ -3,8 +3,7 @@
 """
 
 import tkinter as tk
-from views.interfaz import InterfazApp
-from views.login_view import LoginView
+from ui.views import LoginView
 
 """
     Asegura que el código solo se ejecute cuando el archivo es ejecutado directamente, no cuando es importado como módulo.
