@@ -3,8 +3,8 @@ from tkinter import messagebox
 
 from controllers.login_controller import LoginController
 
-from views.admin_view import AdminView
-from views.estudiante_view import EstudianteView
+from ui.views.admin_view import AdminView
+from ui.views.estudiante_view import EstudianteView
 
 
 class LoginView:
