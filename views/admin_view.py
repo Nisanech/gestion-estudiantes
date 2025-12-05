@@ -438,6 +438,113 @@ class AdminView:
         tab_programa = tk.Frame(notebook, bg=self.card_bg)
         notebook.add(tab_programa, text="🎓 Programas")
 
+        # -------- FORMULARIO CREAR PROGRAMA --------
+        formulario_programa_frame = tk.Frame(tab_programa, bg=self.card_bg)
+        formulario_programa_frame.pack(fill="x", padx=15, pady=15)
+
+        # Título del formulario
+        tk.Label(
+            formulario_programa_frame,
+            text="Crear Nuevo Programa",
+            font=(self.font, 14, "bold"),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w", pady=(0, 15))
+
+        # -------- DATOS DEL PROGRAMA --------
+        datos_programa_frame = tk.Frame(formulario_programa_frame, bg=self.card_bg)
+        datos_programa_frame.pack(fill="x", pady=(0, 15))
+
+        tk.Label(
+            datos_programa_frame,
+            text="Datos del Programa",
+            font=(self.font, 11, "bold"),
+            fg=self.primary_color,
+            bg=self.card_bg
+        ).pack(anchor="w", pady=(0, 10))
+
+        # Contenedor para campos del formulario
+        campos_form_programa_frame = tk.Frame(datos_programa_frame, bg=self.card_bg)
+        campos_form_programa_frame.pack(fill="x")
+
+        # Campo Nombre del Programa
+        programa_container = tk.Frame(campos_form_programa_frame, bg=self.card_bg)
+        programa_container.pack(side="left", padx=(0, 15), expand=True, fill="x")
+
+        tk.Label(
+            programa_container,
+            text="Nombre del Programa:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+
+        self.entry_nombre_programa = tk.Entry(
+            programa_container,
+            font=(self.font, 10),
+            bg=self.card_bg,
+            fg=self.text_color,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            highlightcolor=self.primary_color
+        )
+        self.entry_nombre_programa.pack(fill="x", ipady=5)
+
+        # Campo Descripcion Programa
+        descripcion_container = tk.Frame(campos_form_programa_frame, bg=self.card_bg)
+        descripcion_container.pack(side="left", padx=(0, 15), expand=True, fill="x")
+
+        tk.Label(
+            descripcion_container,
+            text="Descripción del programa:",
+            font=(self.font, 10),
+            fg=self.text_color,
+            bg=self.card_bg
+        ).pack(anchor="w")
+
+        self.entry_descripcion = tk.Entry(
+            descripcion_container,
+            font=(self.font, 10),
+            bg=self.card_bg,
+            fg=self.text_color,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=1,
+            highlightbackground=self.border_color,
+            highlightcolor=self.primary_color,
+            show="*"
+        )
+        self.entry_descripcion.pack(fill="x", ipady=5)
+
+        # Botón Guardar
+        btn_guardar_frame = tk.Frame(formulario_programa_frame, bg=self.card_bg)
+        btn_guardar_frame.pack(fill="x", pady=(10, 0))
+
+        btn_guardar = tk.Button(
+            btn_guardar_frame,
+            text="Guardar Programa",
+            font=(self.font, 11, "bold"),
+            bg=self.primary_color,
+            fg="white",
+            activebackground=self.primary_hover,
+            activeforeground="white",
+            relief="flat",
+            cursor="hand2",
+            padx=30,
+            pady=10
+        )
+        btn_guardar.pack(side="left")
+
+        # Efectos hover para el botón
+        btn_guardar.bind("<Enter>", lambda e: btn_guardar.config(bg=self.primary_hover))
+        btn_guardar.bind("<Leave>", lambda e: btn_guardar.config(bg=self.primary_color))
+
+        # Separador visual
+        separator = tk.Frame(tab_programa, bg=self.border_color, height=2)
+        separator.pack(fill="x", padx=15, pady=(0, 15))
+
         cols_programa = ("ID", "Programa", "Descripción")
 
         # Frame para la tabla con borde
