@@ -1,6 +1,9 @@
 """
     Capa de controlador que gestiona la lógica de negocio relacionada con estudiantes.
 """
+from types import SimpleNamespace
+
+from controllers.usuario_controller import UsuarioController
 
 from models.estudiante import Estudiante
 
@@ -49,8 +52,6 @@ class EstudianteController:
                 Si pasa las validaciones, crea el estudiante
                 Retorna el ID del estudiante o mensaje de error
         """
-        print("Datos estudiante", usuario_id, nombre, apellido, edad, genero)
-
         if not usuario_id:
             return None, "El usuario es obligatorio"
 
@@ -63,3 +64,21 @@ class EstudianteController:
             return estudiante_id, None
         else:
             return None, "Error al crear el estudiante"
+
+    @staticmethod
+    def crear_estudiante_usuario(valores):
+        # Extraer datos enviados desde el formulario
+        datos = SimpleNamespace(**valores)
+
+        # Crear usuario
+        usuario_id, error = UsuarioController.crear_usuario(datos.correo, datos.password, datos.rol)
+
+        if error:
+            return None, error
+
+        estudiante_id, error = EstudianteController.crear_estudiante(usuario_id, datos.nombre, datos.apellido,
+                                                                     datos.edad, datos.genero)
+
+        if error:
+            return None, error
+        return estudiante_id, None
