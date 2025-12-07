@@ -25,7 +25,7 @@ class Programa:
         cursor = db.cursor()
 
         consulta = """
-            SELECT id, nombre_programa, descripcion 
+            SELECT nombre_programa, descripcion 
             FROM programa
         """
 
@@ -36,3 +36,23 @@ class Programa:
         cursor.close()
 
         return resultados
+
+    @staticmethod
+    def crear(nombre, descripcion):
+        db = ConexionBD().conectar()
+        cursor = db.cursor()
+
+        consulta = """
+            INSERT INTO programa (nombre_programa, descripcion) VALUES (%s, %s)
+        """
+        valores = (nombre, descripcion)
+
+        cursor.execute(consulta, valores)
+
+        db.commit()
+
+        programa_id = cursor.lastrowid
+
+        cursor.close()
+
+        return programa_id

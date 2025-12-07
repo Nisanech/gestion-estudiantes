@@ -181,7 +181,23 @@ class AdminView:
         self.tabla_programas.cargar_datos(programas)
 
     def crear_programa(self):
-        pass
+        # Obtener datos del formulario
+        valores = {
+            name: widget.get()
+            for name, widget in self.programa_fields.items()
+        }
+
+        _resultado, error = ProgramaController.crear_programa(valores)
+
+        if error:
+            UIHelpers.mostrar_mensaje_error("Error", error)
+            return
+
+        UIHelpers.mostrar_mensaje_info("OK", "Programa creado exitosamente")
+
+        self.cargar_programas()
+
+        FormBuilder.limpiar_formulario(self.programa_fields)
 
     def cerrar_sesion(self):
         self.root.destroy()

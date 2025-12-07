@@ -76,8 +76,13 @@ class EstudianteController:
         if error:
             return None, error
 
-        estudiante_id, error = EstudianteController.crear_estudiante(usuario_id, datos.nombre, datos.apellido,
-                                                                     datos.edad, datos.genero)
+        estudiante_id, error = EstudianteController.crear_estudiante(
+            usuario_id,
+            datos.nombre,
+            datos.apellido,
+            datos.edad,
+            datos.genero
+        )
 
         if error:
             return None, error
