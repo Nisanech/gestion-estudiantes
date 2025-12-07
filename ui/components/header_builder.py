@@ -5,7 +5,7 @@ from ui.components.styles import AppStyles
 
 class HeaderBuilder:
     @staticmethod
-    def crear_encabezado(contenedor_padre, usuario, metodo):
+    def crear_encabezado(contenedor_padre, titulo, usuario, metodo):
         encabezado_frame = tk.Frame(contenedor_padre, bg=AppStyles.HEADER_BG, height=100)
         encabezado_frame.pack(fill="x", side="top")
         encabezado_frame.pack_propagate(False)
@@ -20,7 +20,7 @@ class HeaderBuilder:
 
         tk.Label(
             titulo_frame,
-            text="Panel de Administración",
+            text=titulo,
             **AppStyles.estilos_label("encabezado")
         ).pack(anchor="w")
 

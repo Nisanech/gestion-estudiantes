@@ -48,3 +48,14 @@ class UIHelpers:
     @staticmethod
     def evento_enter(elemento_interfaz, metodo):
         elemento_interfaz.bind("<Enter>", lambda e: metodo())
+
+    @staticmethod
+    def cerrar_sesion(root):
+        root.destroy()
+
+        from ui.views.login_view import LoginView
+
+        ventana = tk.Tk()
+        LoginView(ventana)
+        ventana.mainloop()
+

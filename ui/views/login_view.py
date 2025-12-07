@@ -51,15 +51,14 @@ class LoginView:
 
         # Obtener datos del usuario
         rol = usuario['rol']
-        user_id = usuario['id']
 
         # Eliminar la vista de login
         self.root.destroy()
 
         # Redirigir según el rol del usuario
-        self._redirigir_por_rol(rol, user_id, usuario)
+        self._redirigir_por_rol(rol, usuario)
 
-    def _redirigir_por_rol(self, rol, user_id, usuario):
+    def _redirigir_por_rol(self, rol, usuario):
         if rol == 'admin':
             from ui.views.admin_view import AdminView
 
@@ -70,5 +69,5 @@ class LoginView:
             from ui.views.estudiante_view import EstudianteView
 
             root_estudiante = tk.Tk()
-            EstudianteView(root_estudiante, user_id)
+            EstudianteView(root_estudiante, usuario)
             root_estudiante.mainloop()
