@@ -6,6 +6,7 @@ from controllers.programa_controller import ProgramaController
 
 from ui.components import AppStyles, HeaderBuilder, FormBuilder, TableBuilder
 from ui.helpers import UIHelpers
+from ui.helpers.form_fields import FormFields
 
 
 class AdminView:
@@ -24,7 +25,7 @@ class AdminView:
         self._build_ui()
 
     def _build_ui(self):
-        HeaderBuilder.crear_encabezado(self.root, self.usuario, self.cerrar_sesion)
+        HeaderBuilder.crear_encabezado(self.root, "Panel de Administración", self.usuario, self.cerrar_sesion)
 
         # Contenedor Principal
         contenedor_principal = tk.Frame(self.root, bg=AppStyles.BG_COLOR)
@@ -42,60 +43,14 @@ class AdminView:
         tab = tk.Frame(notebook, bg=AppStyles.CARD_BG)
         notebook.add(tab, text="📚 Estudiantes")
 
+        # Campos del formulario
+        fields = FormFields.estudiante_fields()
+
         # Formulario
         form = FormBuilder(tab)
         self.estudiante_fields = form.crear_formulario(
-            titulo="Crear Nuevo Estudiante",
-            secciones=[
-                {
-                    "titulo": "Datos de Usuario",
-                    "campos": [
-                        {
-                            "nombre": "correo",
-                            "etiqueta": "Correo Electrónico:",
-                            "tipo": "entry"
-                        },
-                        {
-                            "nombre": "password",
-                            "etiqueta": "Contraseña:",
-                            "tipo": "password"
-                        },
-                        {
-                            "nombre": "rol",
-                            "etiqueta": "Rol:",
-                            "tipo": "readonly",
-                            "default": "estudiante"
-                        }
-                    ]
-                },
-                {
-                    "titulo": "Datos del Estudiante",
-                    "campos": [
-                        {
-                            "nombre": "nombre",
-                            "etiqueta": "Nombre:",
-                            "tipo": "entry"
-                        },
-                        {
-                            "nombre": "apellido",
-                            "etiqueta": "Apellido:",
-                            "tipo": "entry"
-                        },
-                        {
-                            "nombre": "edad",
-                            "etiqueta": "Edad:",
-                            "tipo": "entry"
-                        },
-                        {
-                            "nombre": "genero",
-                            "etiqueta": "Género:",
-                            "tipo": "combobox",
-                            "opciones": ["F", "M", "Otro"],
-                            "default": "F"
-                        }
-                    ]
-                }
-            ]
+            titulo=fields["titulo"],
+            secciones=fields["secciones"]
         )
 
         form.agregar_btn_guardar("Guardar Estudiante", self.crear_estudiante)
@@ -115,27 +70,14 @@ class AdminView:
         tab = tk.Frame(notebook, bg=AppStyles.CARD_BG)
         notebook.add(tab, text="🎓 Programas")
 
+        # Campos del formulario
+        fields = FormFields.programa_fields()
+
         # Formulario
         form = FormBuilder(tab)
         self.programa_fields = form.crear_formulario(
-            titulo="Crear Nuevo Programa",
-            secciones=[
-                {
-                    "titulo": "Datos del Programa",
-                    "campos": [
-                        {
-                            "nombre": "nombre_programa",
-                            "etiqueta": "Nombre del Programa:",
-                            "tipo": "entry"
-                        },
-                        {
-                            "nombre": "descripcion",
-                            "etiqueta": "Descripción del programa:",
-                            "tipo": "entry"
-                        }
-                    ]
-                }
-            ]
+            titulo=fields["titulo"],
+            secciones=fields["secciones"]
         )
 
         form.agregar_btn_guardar("Guardar Programa", self.crear_programa)
@@ -200,10 +142,4 @@ class AdminView:
         FormBuilder.limpiar_formulario(self.programa_fields)
 
     def cerrar_sesion(self):
-        self.root.destroy()
-
-        from ui.views.login_view import LoginView
-
-        ventana = tk.Tk()
-        LoginView(ventana)
-        ventana.mainloop()
+        UIHelpers.cerrar_sesion(self.root)
