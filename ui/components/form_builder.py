@@ -31,6 +31,74 @@ class FormBuilder:
 
         return self.campos
 
+    def crear_formulario_login(self, metodo_login):
+        self.formulario_frame = tk.Frame(self.contenedor_padre, bg=AppStyles.BG_COLOR)
+        self.formulario_frame.pack(pady=10)
+
+        # Campo de correo electrónico
+        tk.Label(
+            self.formulario_frame,
+            text="Correo electrónico",
+            font=(AppStyles.FONT_FAMILY, 10, "bold"),
+            fg=AppStyles.TEXT_COLOR,
+            bg=AppStyles.CARD_BG,
+            anchor="w"
+        ).pack(fill="x", pady=(0, 5))
+
+        entry_correo = tk.Entry(
+            self.formulario_frame,
+            width=35,
+            font=(AppStyles.FONT_FAMILY, 11),
+            bg=AppStyles.CARD_BG,
+            fg=AppStyles.TEXT_COLOR,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=2,
+            highlightbackground=AppStyles.BORDER_COLOR,
+            highlightcolor=AppStyles.PRIMARY_COLOR
+        )
+        entry_correo.pack(ipady=8, pady=(0, 20))
+
+        # Campo de contraseña
+        tk.Label(
+            self.formulario_frame,
+            text="Contraseña",
+            font=(AppStyles.FONT_FAMILY, 10, "bold"),
+            fg=AppStyles.TEXT_COLOR,
+            bg=AppStyles.CARD_BG,
+            anchor="w"
+        ).pack(fill="x", pady=(0, 5))
+
+        entry_password = tk.Entry(
+            self.formulario_frame,
+            width=35,
+            show="●",
+            font=(AppStyles.FONT_FAMILY, 11),
+            bg=AppStyles.CARD_BG,
+            fg=AppStyles.TEXT_COLOR,
+            relief="solid",
+            borderwidth=1,
+            highlightthickness=2,
+            highlightbackground=AppStyles.BORDER_COLOR,
+            highlightcolor=AppStyles.PRIMARY_COLOR
+        )
+        entry_password.pack(ipady=8, pady=(0, 25))
+
+        # Botón de login
+        btn_login = self.agregar_btn_guardar("Ingresar", metodo_login)
+
+        # Evento: Tecla Enter para ingresar
+        entry_password.bind("<Return>", lambda e: metodo_login())
+
+        # Guardar referencias
+        self.campos = {
+            'correo': entry_correo,
+            'password': entry_password,
+            'btn_login': btn_login
+        }
+
+        return self.campos
+
     def _crear_seccion(self, seccion):
         seccion_frame = tk.Frame(self.formulario_frame, bg=AppStyles.CARD_BG)
         seccion_frame.pack(fill="x", pady=(0, 15))
@@ -129,7 +197,7 @@ class FormBuilder:
         self.campos[nombre_campo] = widget
 
     def agregar_btn_guardar(self, texto, metodo):
-        btn_frame = tk.Frame(self.formulario_frame, bg=AppStyles.CARD_BG)
+        btn_frame = tk.Frame(self.formulario_frame, bg=AppStyles.BG_COLOR)
         btn_frame.pack(fill="x", pady=(10, 0))
 
         btn_submit = tk.Button(
@@ -158,6 +226,9 @@ class FormBuilder:
         for campo, widget in self.campos.items():
             if isinstance(widget, ttk.Combobox):
                 valores[campo] = widget.get()
+            elif isinstance(widget, tk.Button):
+                # Ignorar botones al obtener valores
+                continue
             else:
                 valores[campo] = widget.get()
 
@@ -168,5 +239,5 @@ class FormBuilder:
         for widget in campos.values():
             if isinstance(widget, ttk.Combobox):
                 widget.set("")
-            elif widget.cget("state") != "readonly":
+            elif isinstance(widget, tk.Entry) and widget.cget("state") != "readonly":
                 widget.delete(0, tk.END)

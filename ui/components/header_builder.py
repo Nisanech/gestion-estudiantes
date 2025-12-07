@@ -46,3 +46,28 @@ class HeaderBuilder:
                                lambda e: btn_cerrar_sesion.config(bg=AppStyles.ERROR_COLOR))
 
         return encabezado_frame
+
+    @staticmethod
+    def crear_encabezado_login(contenedor_padre, titulo, subtitulo):
+        header_frame = tk.Frame(contenedor_padre, bg=AppStyles.BG_COLOR)
+        header_frame.pack(pady=(0, 30))
+
+        title_label = tk.Label(
+            header_frame,
+            text=titulo,
+            font=(AppStyles.FONT_FAMILY, 24, "bold"),
+            fg=AppStyles.TEXT_COLOR,
+            bg=AppStyles.BG_COLOR
+        )
+        title_label.pack()
+
+        subtitle_label = tk.Label(
+            header_frame,
+            text=subtitulo,
+            font=(AppStyles.FONT_FAMILY, 11),
+            fg="#64748b",
+            bg=AppStyles.BG_COLOR
+        )
+        subtitle_label.pack(pady=(5, 0))
+
+        return header_frame
