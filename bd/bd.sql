@@ -109,3 +109,85 @@ INSERT INTO programa (nombre_programa, descripcion) VALUES
 ('Marketing Digital', 'Formación en estrategias digitales, redes sociales, publicidad online y analítica web.');
 
 
+INSERT INTO categoria (nombre, descripcion) VALUES
+('CIENCIAS EXACTAS Y MATEMÁTICAS', 'Mide la afinidad con áreas STEM, ingeniería y ciencias puras'),
+('TECNOLOGÍA Y PROGRAMACIÓN', 'Evalúa interés en desarrollo de software, sistemas y tecnologías digitales'),
+('CIENCIAS DE LA SALUD', 'Mide vocación por medicina, enfermería y áreas relacionadas con bienestar'),
+('CIENCIAS SOCIALES Y HUMANAS', 'Evalúa interés en comportamiento humano, sociedad y cultura'),
+('NEGOCIOS Y ADMINISTRACIÓN', 'Mide afinidad con gestión empresarial, finanzas y emprendimiento'),
+('ARTES Y DISEÑO', 'Mide habilidades comunicativas, escritura y expresión verbal'),
+('COMUNICACIÓN Y LENGUAJE', 'Mide la afinidad con áreas STEM, ingeniería y ciencias puras'),
+('CIENCIAS NATURALES Y AMBIENTE', 'Evalúa interés por biología, ecología y medio ambiente'),
+('EDUCACIÓN Y PEDAGOGÍA', 'Mide vocación por la enseñanza y formación de otros'),
+('DERECHO Y JUSTICIA', 'Evalúa interés por leyes, sistema judicial y argumentación');
+
+INSERT INTO pregunta (categoria_id, texto_pregunta) VALUES
+(1, 'Me gusta resolver problemas utilizando números y fórmulas matemáticas'),
+(1, 'Disfruto entender cómo funcionan las cosas desde un punto de vista técnico'),
+(1, 'Me siento cómodo trabajando con ecuaciones y cálculos complejos'),
+(1, 'Me interesa descubrir patrones y relaciones lógicas en los datos'),
+(1, 'Prefiero soluciones basadas en evidencia científica y métodos cuantitativos'),
+
+(2, 'Me atrae la idea de crear aplicaciones, software o sitios web'),
+(2, 'Disfruto aprender nuevos lenguajes de programación o herramientas tecnológicas'),
+(2, 'Me interesa entender cómo funcionan los sistemas informáticos y redes'),
+(2, 'Me gusta automatizar procesos y resolver problemas mediante código'),
+(2, 'Paso tiempo explorando nuevas tecnologías y tendencias digitales'),
+
+(3, 'Me motiva la idea de ayudar a las personas a mejorar su salud'),
+(3, 'Me interesa comprender el funcionamiento del cuerpo humano y sus enfermedades'),
+(3, 'Tengo paciencia y empatía para tratar con personas en situaciones difíciles'),
+(3, 'Me siento cómodo en entornos hospitalarios o clínicos'),
+(3, 'Me gustaría participar en investigación médica o práctica clínica'),
+
+(4, 'Me fascina entender el comportamiento humano y las dinámicas sociales'),
+(4, 'Disfruto analizar problemas sociales y proponer soluciones'),
+(4, 'Me interesa la historia, la política y los movimientos culturales'),
+(4, 'Me gusta investigar sobre diferentes culturas y formas de pensamiento'),
+(4, 'Considero importante trabajar por el bienestar social y la justicia'),
+
+(5, 'Me interesa cómo funcionan las empresas y cómo se toman decisiones estratégicas'),
+(5, 'Me atrae la idea de crear o dirigir mi propio negocio'),
+(5, 'Disfruto analizar datos financieros y tendencias del mercado'),
+(5, 'Me siento cómodo liderando equipos y coordinando proyectos'),
+(5, 'Me motiva alcanzar metas comerciales y mejorar resultados organizacionales'),
+
+(6, 'Me gusta expresarme a través de la creación artística (dibujo, música, diseño, etc.)'),
+(6, 'Tengo facilidad para visualizar conceptos y representarlos gráficamente'),
+(6, 'Disfruto proyectos que requieren creatividad e innovación estética'),
+(6, 'Me interesa la teoría del color, composición y elementos visuales'),
+(6, 'Valoro la originalidad y la expresión personal en mi trabajo'),
+
+(7, 'Me siento cómodo hablando en público y expresando mis ideas'),
+(7, 'Disfruto escribir textos, artículos o historias'),
+(7, 'Me interesa aprender idiomas y entender diferentes formas de comunicación'),
+(7, 'Me gusta trabajar con medios de comunicación (radio, TV, redes sociales)'),
+(7, 'Tengo facilidad para persuadir y transmitir mensajes de forma efectiva'),
+
+(8, 'Me preocupa el estado del medio ambiente y la conservación de recursos'),
+(8, 'Me fascina estudiar seres vivos, ecosistemas y procesos naturales'),
+(8, 'Disfruto realizar trabajo de campo y experimentos en laboratorio'),
+(8, 'Me interesa la investigación en áreas como biología, química o geología'),
+(8, 'Me gustaría contribuir a soluciones ambientales y sostenibilidad'),
+
+(9, 'Me gusta explicar conceptos y ayudar a otros a aprender'),
+(9, 'Tengo paciencia para trabajar con diferentes tipos de estudiantes'),
+(9, 'Me motiva la idea de contribuir a la formación de nuevas generaciones'),
+(9, 'Disfruto planificar actividades educativas y metodologías de enseñanza'),
+(9, 'Me interesa la psicología del aprendizaje y el desarrollo educativo'),
+
+(10, 'Me interesa conocer las leyes y cómo se aplican en la sociedad'),
+(10, 'Disfruto debatir y argumentar desde diferentes perspectivas legales'),
+(10, 'Me motiva defender derechos y buscar justicia'),
+(10, 'Me siento cómodo analizando casos legales y normativas'),
+(10, 'Me gustaría trabajar en el sistema judicial o en asesoría legal');
+
+
+-- Crear para cada ID pregunta (1-50) --
+INSERT INTO opcion_respuesta (pregunta_id, texto_opcion, valor_fuzzy) VALUES
+(50, 'Totalmente en desacuerdo', 0.0),
+(50, 'En desacuerdo', 0.25),
+(50, 'Neutral', 0.5),
+(50, 'De acuerdo', 0.75),
+(50, 'Totalmente de acuerdo', 1.0);
+
