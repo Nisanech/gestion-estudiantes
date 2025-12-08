@@ -1,13 +1,16 @@
+from controllers.test_vocacional_controller import TestVocacionalController
 from ui.components import AppStyles, HeaderBuilder
 from ui.helpers import UIHelpers
 from controllers.estudiante_controller import EstudianteController
 import tkinter as tk
+from tkinter import ttk
 
 
 class EstudianteView:
     def __init__(self, root, usuario_id):
         self.root = root
         self.estudiante = usuario_id
+        self.respuestas = {}  # Almacenar respuestas del test
 
         self.root.title("Panel Estudiante")
         self.root.geometry("1200x1000")
@@ -22,12 +25,15 @@ class EstudianteView:
     def _build_ui(self):
         HeaderBuilder.crear_encabezado(self.root, "Test Vocacional", self.estudiante, self.cerrar_sesion)
 
-        # Contenedor principal con scroll
+        # Contenedor principal
         main_container = tk.Frame(self.root, bg=AppStyles.BG_COLOR)
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
 
         # Sección de datos del estudiante
         self._crear_seccion_datos_estudiante(main_container)
+
+        # Crear tabs
+        self._crear_tabs(main_container)
 
     def _crear_seccion_datos_estudiante(self, contenedor_padre):
         # Obtener datos del estudiante
@@ -83,6 +89,164 @@ class EstudianteView:
                 anchor="w",
                 **AppStyles.estilos_label("normal")
             ).pack(anchor="w")
+
+    def _crear_tabs(self, contenedor_padre):
+        # Notebook con pestañas
+        notebook = ttk.Notebook(contenedor_padre, style="Custom.TNotebook")
+        notebook.pack(fill="both", expand=True)
+
+        # Crear tabs
+        self._crear_tab_test(notebook)
+        self._crear_tab_resultados(notebook)
+
+    def _crear_tab_test(self, notebook):
+        """Crea la pestaña del Test Vocacional"""
+        tab = tk.Frame(notebook, bg=AppStyles.CARD_BG)
+        notebook.add(tab, text="📝 Test")
+
+        # Canvas con scrollbar para el formulario
+        canvas = tk.Canvas(tab, bg=AppStyles.CARD_BG, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(tab, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg=AppStyles.CARD_BG)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Instrucciones
+        instrucciones_frame = tk.Frame(scrollable_frame, bg=AppStyles.CARD_BG)
+        instrucciones_frame.pack(fill="x", padx=20, pady=(0, 20))
+
+        # Obtener estructura del test
+        test_data = TestVocacionalController.listar_preguntas_categorias()
+
+        # Crear preguntas por categoría
+        for categoria in test_data["categorias"]:
+            self._crear_categoria(scrollable_frame, categoria)
+
+        # Botón de enviar
+        btn_frame = tk.Frame(scrollable_frame, bg=AppStyles.CARD_BG)
+        btn_frame.pack(fill="x", padx=20, pady=20)
+
+        tk.Button(
+            btn_frame,
+            text="Enviar Test",
+            command=self.enviar_test,
+            **AppStyles.estilos_button("primary")
+        ).pack(side="left")
+
+        # Empaquetar canvas y scrollbar
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Habilitar scroll con rueda del mouse
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+    def _crear_categoria(self, contenedor, categoria):
+        # Frame de categoría
+        categoria_frame = tk.Frame(contenedor, bg=AppStyles.CARD_BG)
+        categoria_frame.pack(fill="x", padx=20, pady=(0, 20))
+
+        # Título de categoría
+        tk.Label(
+            categoria_frame,
+            text=categoria["nombre"],
+            font=(AppStyles.FONT_FAMILY, 12, "bold"),
+            fg=AppStyles.PRIMARY_COLOR,
+            bg=AppStyles.CARD_BG,
+            anchor="w"
+        ).pack(fill="x", pady=(0, 15))
+
+        # Crear cada pregunta
+        for pregunta in categoria["preguntas"]:
+            self._crear_pregunta_radio(categoria_frame, pregunta)
+
+    def _crear_pregunta_radio(self, contenedor, pregunta):
+        """Crea una pregunta con radio buttons"""
+        pregunta_id = pregunta["id"]
+        texto_pregunta = pregunta["texto"]
+        opciones = pregunta["opciones"]
+
+        # Frame de la pregunta
+        pregunta_frame = tk.Frame(contenedor, bg=AppStyles.CARD_BG)
+        pregunta_frame.pack(fill="x", pady=(0, 20))
+
+        # Texto de la pregunta
+        tk.Label(
+            pregunta_frame,
+            text=f"{pregunta_id}. {texto_pregunta}",
+            font=(AppStyles.FONT_FAMILY, 10),
+            fg=AppStyles.TEXT_COLOR,
+            bg=AppStyles.CARD_BG,
+            wraplength=900,
+            justify="left",
+            anchor="w"
+        ).pack(fill="x", pady=(0, 10))
+
+        # Frame para las opciones
+        opciones_frame = tk.Frame(pregunta_frame, bg=AppStyles.CARD_BG)
+        opciones_frame.pack(fill="x", padx=20)
+
+        # Variable para almacenar la respuesta (usar DoubleVar para valores decimales)
+        var = tk.DoubleVar(value=-1)
+        self.respuestas[f"pregunta_{pregunta_id}"] = var
+
+        # Crear radio buttons
+        for opcion in opciones:
+            rb = tk.Radiobutton(
+                opciones_frame,
+                text=opcion['texto'],
+                variable=var,
+                value=opcion['valor'],
+                font=(AppStyles.FONT_FAMILY, 9),
+                fg=AppStyles.TEXT_COLOR,
+                bg=AppStyles.CARD_BG,
+                activebackground=AppStyles.CARD_BG,
+                selectcolor=AppStyles.CARD_BG,
+                cursor="hand2"
+            )
+            rb.pack(anchor="w", pady=2)
+
+    def _crear_tab_resultados(self, notebook):
+        """Crea la pestaña de Resultados"""
+        tab = tk.Frame(notebook, bg=AppStyles.CARD_BG)
+        notebook.add(tab, text="📊 Resultados")
+
+        # Mensaje placeholder
+        tk.Label(
+            tab,
+            text="Los resultados aparecerán aquí una vez completes el test",
+            font=(AppStyles.FONT_FAMILY, 14),
+            fg=AppStyles.TEXT_LIGHT,
+            bg=AppStyles.CARD_BG
+        ).pack(expand=True)
+
+    def enviar_test(self):
+        """Procesa el envío del test (placeholder)"""
+        # Verificar que todas las preguntas estén respondidas
+        sin_responder = []
+        for pregunta, var in self.respuestas.items():
+            if var.get() == -1:
+                sin_responder.append(pregunta)
+
+        if sin_responder:
+            UIHelpers.mostrar_mensaje_error(
+                "Test incompleto",
+                f"Por favor responde todas las preguntas. Faltan {len(sin_responder)} preguntas."
+            )
+            return
+
+        # Placeholder para procesamiento
+        UIHelpers.mostrar_mensaje_info(
+            "Test enviado",
+            "El test ha sido enviado correctamente. Los resultados se procesarán pronto."
+        )
 
     def cerrar_sesion(self):
         UIHelpers.cerrar_sesion(self.root)
