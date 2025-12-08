@@ -1,3 +1,4 @@
+from models.respuesta_estudiante import RespuestaEstudiante
 from models.test_vocacional import TestVocacional
 
 
@@ -26,6 +27,7 @@ class TestVocacionalController:
                 }
 
             categorias[categoria_id]["preguntas"][pregunta_id]["opciones"].append({
+                "id": fila["opcion_id"],
                 "texto": fila["texto_opcion"],
                 "valor": float(fila["valor_fuzzy"])
             })
@@ -41,3 +43,35 @@ class TestVocacionalController:
             })
 
         return resultado_final
+
+    @staticmethod
+    def guardar_respuestas(estudiante_id, respuestas):
+        try:
+            errores = []
+
+            for item in respuestas:
+                pregunta_id = item.get("pregunta_id")
+                opcion_id = item.get("opcion_id")
+                valor = item.get("valor_fuzzy")
+
+                if pregunta_id is None or opcion_id is None or valor is None:
+                    errores.append(f"Datos incompletos en {item}")
+                    continue
+
+                try:
+                    RespuestaEstudiante.guardar_respuesta(
+                        estudiante_id,
+                        pregunta_id,
+                        opcion_id,
+                        valor
+                    )
+                except Exception as e:
+                    errores.append(f"Error al guardar pregunta {pregunta_id}: {str(e)}")
+
+            if errores:
+                return False, errores
+
+            return True, None
+
+        except Exception as e:
+            return False, str(e)

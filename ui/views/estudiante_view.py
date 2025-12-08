@@ -193,23 +193,31 @@ class EstudianteView:
         opciones_frame = tk.Frame(pregunta_frame, bg=AppStyles.CARD_BG)
         opciones_frame.pack(fill="x", padx=20)
 
-        # Variable para almacenar la respuesta (usar DoubleVar para valores decimales)
-        var = tk.DoubleVar(value=-1)
-        self.respuestas[f"pregunta_{pregunta_id}"] = var
+        # Variables para la respuesta:
+        var_fuzzy = tk.DoubleVar(value=-1)
+        var_opcion = tk.IntVar(value=-1)
+
+        # Guardamos ambas variables
+        self.respuestas[f"pregunta_{pregunta_id}"] = {
+            "var_fuzzy": var_fuzzy,
+            "var_opcion": var_opcion
+        }
 
         # Crear radio buttons
         for opcion in opciones:
             rb = tk.Radiobutton(
                 opciones_frame,
                 text=opcion['texto'],
-                variable=var,
+                variable=var_fuzzy,
                 value=opcion['valor'],
                 font=(AppStyles.FONT_FAMILY, 9),
                 fg=AppStyles.TEXT_COLOR,
                 bg=AppStyles.CARD_BG,
                 activebackground=AppStyles.CARD_BG,
                 selectcolor=AppStyles.CARD_BG,
-                cursor="hand2"
+                cursor="hand2",
+                command=lambda opt=opcion, k=f"pregunta_{pregunta_id}":
+                self.respuestas[k]["var_opcion"].set(opt["id"])
             )
             rb.pack(anchor="w", pady=2)
 
@@ -228,12 +236,11 @@ class EstudianteView:
         ).pack(expand=True)
 
     def enviar_test(self):
-        """Procesa el envío del test (placeholder)"""
         # Verificar que todas las preguntas estén respondidas
         sin_responder = []
-        for pregunta, var in self.respuestas.items():
-            if var.get() == -1:
-                sin_responder.append(pregunta)
+        for pregunta_key, datos in self.respuestas.items():
+            if datos["var_fuzzy"].get() == -1:
+                sin_responder.append(pregunta_key)
 
         if sin_responder:
             UIHelpers.mostrar_mensaje_error(
@@ -242,11 +249,36 @@ class EstudianteView:
             )
             return
 
-        # Placeholder para procesamiento
-        UIHelpers.mostrar_mensaje_info(
-            "Test enviado",
-            "El test ha sido enviado correctamente. Los resultados se procesarán pronto."
+        # Formatear respuestas para el controlador
+        respuestas_formateadas = []
+        for pregunta_key, datos in self.respuestas.items():
+            pregunta_id = int(pregunta_key.split("_")[1])
+            valor_fuzzy = datos["var_fuzzy"].get()
+            opcion_id = datos["var_opcion"].get()
+
+            respuestas_formateadas.append({
+                "pregunta_id": pregunta_id,
+                "opcion_id": opcion_id,
+                "valor_fuzzy": valor_fuzzy
+            })
+
+        # Enviar al controlador
+        estudiante_id = self.estudiante['id']
+        exito, error = TestVocacionalController.guardar_respuestas(
+            estudiante_id,
+            respuestas_formateadas
         )
+
+        if exito:
+            UIHelpers.mostrar_mensaje_info(
+                "Test enviado",
+                "El test ha sido enviado correctamente. Los resultados se procesarán pronto."
+            )
+        else:
+            UIHelpers.mostrar_mensaje_error(
+                "Error al guardar",
+                f"Hubo un problema al guardar las respuestas: {error}"
+            )
 
     def cerrar_sesion(self):
         UIHelpers.cerrar_sesion(self.root)
