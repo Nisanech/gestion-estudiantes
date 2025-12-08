@@ -81,32 +81,6 @@ class Estudiante:
 
         return resultados
 
-    # Listar estudiantes mayores de 18
-    @staticmethod
-    def listar_mayores_18():
-        """
-            Obtiene todos los estudiantes mayores de 18 años.
-            Decorador: @staticmethod - No requiere instancia de la clase
-            Retorna:
-                list[tuple]: Lista de tuplas con formato (id, nombre, edad) de estudiantes mayores de 18 años
-            Funcionamiento:
-                Establece conexión a la base de datos
-                Crea un cursor
-                Ejecuta consulta SELECT con filtro WHERE edad > 18
-                Recupera todos los resultados con fetchall()
-                Cierra el cursor
-                Retorna la lista de estudiantes filtrados
-        """
-        db = ConexionBD().conectar()
-        cursor = db.cursor()
-
-        consulta = "SELECT id, nombre, edad FROM estudiante WHERE edad > 18"
-        cursor.execute(consulta)
-
-        resultados = cursor.fetchall()
-
-        cursor.close()
-        return resultados
 
     # Listar estudiantes por id
     @staticmethod
@@ -129,7 +103,12 @@ class Estudiante:
         db = ConexionBD().conectar()
         cursor = db.cursor()
 
-        consulta = "SELECT id, nombre, edad FROM estudiante WHERE id = %s"
+        consulta = """
+            SELECT u.correo, e.nombre, e.apellido, e.edad, e.genero 
+            FROM estudiante e
+            INNER JOIN usuario u ON u.id = e.usuario_id
+            WHERE e.usuario_id = %s
+        """
         cursor.execute(consulta, (est_id,))
 
         resultado = cursor.fetchone()

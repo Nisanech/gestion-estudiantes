@@ -87,3 +87,7 @@ class EstudianteController:
         if error:
             return None, error
         return estudiante_id, None
+
+    @staticmethod
+    def datos_estudiante(est_id):
+        return Estudiante.listar_por_id(est_id)
