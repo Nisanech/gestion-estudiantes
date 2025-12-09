@@ -1,3 +1,4 @@
+from controllers.ia_controller import IAController
 from controllers.test_vocacional_controller import TestVocacionalController
 from ui.components import AppStyles, HeaderBuilder
 from ui.helpers import UIHelpers
@@ -21,6 +22,8 @@ class EstudianteView:
 
         # Construir interfaz
         self._build_ui()
+
+
 
     def _build_ui(self):
         HeaderBuilder.crear_encabezado(self.root, "Test Vocacional", self.estudiante, self.cerrar_sesion)
@@ -226,14 +229,191 @@ class EstudianteView:
         tab = tk.Frame(notebook, bg=AppStyles.CARD_BG)
         notebook.add(tab, text="📊 Resultados")
 
-        # Mensaje placeholder
+        # Obtener resultados del controlador
+        exito, resultados = IAController.calcular_recomendaciones(self.estudiante['id'])
+
+        # Si no hay resultados (test no completado), mostrar mensaje
+        if not exito:
+            tk.Label(
+                tab,
+                text="Los resultados aparecerán aquí una vez completes el test",
+                font=(AppStyles.FONT_FAMILY, 14),
+                fg=AppStyles.TEXT_LIGHT,
+                bg=AppStyles.CARD_BG
+            ).pack(expand=True)
+            return
+
+        # Contenedor principal con padding
+        main_container = tk.Frame(tab, bg=AppStyles.CARD_BG)
+        main_container.pack(fill="both", expand=True, padx=30, pady=10)
+
+        # Contenedor de dos columnas
+        columnas_frame = tk.Frame(main_container, bg=AppStyles.CARD_BG)
+        columnas_frame.pack(fill="both", expand=True)
+
+        # COLUMNA 1: Programa principal (top score)
+        columna_1 = tk.Frame(columnas_frame, bg=AppStyles.CARD_BG)
+        columna_1.pack(side="left", fill="both", expand=True, padx=(0, 15))
+
+        self._crear_programa_principal(columna_1, resultados[0] if resultados else None)
+
+        # COLUMNA 2: Otros programas
+        columna_2 = tk.Frame(columnas_frame, bg=AppStyles.CARD_BG)
+        columna_2.pack(side="left", fill="both", expand=True, padx=(15, 0))
+
+        self._crear_otros_programas(columna_2, resultados[1:] if len(resultados) > 1 else [])
+
+    def _crear_programa_principal(self, contenedor, programa):
+
+        # Título de la sección
         tk.Label(
-            tab,
-            text="Los resultados aparecerán aquí una vez completes el test",
-            font=(AppStyles.FONT_FAMILY, 14),
+            contenedor,
+            text="Test completado",
+            font=(AppStyles.FONT_FAMILY, 16, "bold"),
+            fg=AppStyles.TEXT_COLOR,
+            bg=AppStyles.CARD_BG,
+            anchor="w"
+        ).pack(fill="x", pady=(0, 10))
+
+        # Descripción
+        tk.Label(
+            contenedor,
+            text="Estos son los resultados basados en tus respuestas.",
+            font=(AppStyles.FONT_FAMILY, 10),
             fg=AppStyles.TEXT_LIGHT,
-            bg=AppStyles.CARD_BG
-        ).pack(expand=True)
+            bg=AppStyles.CARD_BG,
+            wraplength=400,
+            justify="left",
+            anchor="w"
+        ).pack(fill="x", pady=(0, 25))
+
+        if not programa:
+            tk.Label(
+                contenedor,
+                text="No hay resultados disponibles",
+                font=(AppStyles.FONT_FAMILY, 11),
+                fg=AppStyles.TEXT_LIGHT,
+                bg=AppStyles.CARD_BG
+            ).pack(fill="x", pady=20)
+            return
+
+        # Card del programa principal
+        card_frame = tk.Frame(
+            contenedor,
+            bg=AppStyles.PRIMARY_COLOR,
+            relief="solid",
+            borderwidth=0
+        )
+        card_frame.pack(fill="x", pady=(0, 10))
+
+        # Contenido del card
+        content_frame = tk.Frame(card_frame, bg=AppStyles.PRIMARY_COLOR)
+        content_frame.pack(fill="x", padx=20, pady=20)
+
+        # Frame para nombre y puntaje
+        info_frame = tk.Frame(content_frame, bg=AppStyles.PRIMARY_COLOR)
+        info_frame.pack(fill="x")
+
+        # Nombre del programa
+        tk.Label(
+            info_frame,
+            text=programa["nombre"],
+            font=(AppStyles.FONT_FAMILY, 14, "bold"),
+            fg="white",
+            bg=AppStyles.PRIMARY_COLOR,
+            anchor="w"
+        ).pack(side="left", fill="x", expand=True)
+
+        # Puntaje
+        puntaje_porcentaje = f"{programa['puntaje'] * 100:.0f}%"
+        tk.Label(
+            info_frame,
+            text=puntaje_porcentaje,
+            font=(AppStyles.FONT_FAMILY, 18, "bold"),
+            fg="white",
+            bg=AppStyles.PRIMARY_COLOR,
+            anchor="e"
+        ).pack(side="right")
+
+    def _crear_otros_programas(self, contenedor, programas):
+        """Crea la sección de otros programas"""
+        # Título de la sección
+        tk.Label(
+            contenedor,
+            text="Afinidad con otros Programas",
+            font=(AppStyles.FONT_FAMILY, 16, "bold"),
+            fg=AppStyles.TEXT_COLOR,
+            bg=AppStyles.CARD_BG,
+            anchor="w"
+        ).pack(fill="x", pady=(0, 10))
+
+        # Descripción
+        tk.Label(
+            contenedor,
+            text="Tu compatibilidad con diferentes áreas de estudio",
+            font=(AppStyles.FONT_FAMILY, 10),
+            fg=AppStyles.TEXT_LIGHT,
+            bg=AppStyles.CARD_BG,
+            wraplength=400,
+            justify="left",
+            anchor="w"
+        ).pack(fill="x", pady=(0, 25))
+
+        if not programas:
+            tk.Label(
+                contenedor,
+                text="No hay otros programas disponibles",
+                font=(AppStyles.FONT_FAMILY, 11),
+                fg=AppStyles.TEXT_LIGHT,
+                bg=AppStyles.CARD_BG
+            ).pack(fill="x", pady=20)
+            return
+
+        # Lista de programas
+        for programa in programas:
+            self._crear_item_programa(contenedor, programa)
+
+    def _crear_item_programa(self, contenedor, programa):
+        """Crea un item individual de programa"""
+        # Frame del item
+        item_frame = tk.Frame(
+            contenedor,
+            bg="white",
+            relief="solid",
+            borderwidth=1,
+            highlightbackground=AppStyles.BORDER_COLOR,
+            highlightthickness=1
+        )
+        item_frame.pack(fill="x", pady=(0, 10))
+
+        # Contenido del item
+        content_frame = tk.Frame(item_frame, bg="white")
+        content_frame.pack(fill="x", padx=15, pady=12)
+
+        # Frame para nombre y puntaje
+        info_frame = tk.Frame(content_frame, bg="white")
+        info_frame.pack(fill="x")
+
+        # Nombre del programa
+        tk.Label(
+            info_frame,
+            text=programa["nombre"],
+            font=(AppStyles.FONT_FAMILY, 11),
+            fg=AppStyles.TEXT_COLOR,
+            bg="white",
+            anchor="w"
+        ).pack(side="left", fill="x", expand=True)
+
+        # Puntaje
+        puntaje_porcentaje = f"{programa['puntaje'] * 100:.0f}%"
+        tk.Label(
+            info_frame,
+            text=puntaje_porcentaje,
+            font=(AppStyles.FONT_FAMILY, 12, "bold"),
+            fg=AppStyles.PRIMARY_COLOR,
+            bg="white",
+            anchor="e"
+        ).pack(side="right")
 
     def enviar_test(self):
         # Verificar que todas las preguntas estén respondidas
@@ -272,13 +452,14 @@ class EstudianteView:
         if exito:
             UIHelpers.mostrar_mensaje_info(
                 "Test enviado",
-                "El test ha sido enviado correctamente. Los resultados se procesarán pronto."
+                "El test ha sido enviado correctamente. Puedes ver los resultados en la pestaña 'Resultados'."
             )
         else:
             UIHelpers.mostrar_mensaje_error(
                 "Error al guardar",
                 f"Hubo un problema al guardar las respuestas: {error}"
             )
+
 
     def cerrar_sesion(self):
         UIHelpers.cerrar_sesion(self.root)
