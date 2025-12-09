@@ -22,10 +22,10 @@ class Programa:
                 Retorna la lista de programas
         """
         db = ConexionBD().conectar()
-        cursor = db.cursor()
+        cursor = db.cursor(dictionary=True)
 
         consulta = """
-            SELECT nombre_programa, descripcion 
+            SELECT id, nombre_programa, descripcion 
             FROM programa
         """
 
