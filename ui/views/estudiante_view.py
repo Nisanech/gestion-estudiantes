@@ -12,6 +12,8 @@ class EstudianteView:
         self.root = root
         self.estudiante = usuario_id
         self.respuestas = {}  # Almacenar respuestas del test
+        self.notebook = None  # Referencia al notebook
+        self.resultados_container = None  # Contenedor de resultados
 
         self.root.title("Panel Estudiante")
         self.root.geometry("1200x1000")
@@ -95,12 +97,15 @@ class EstudianteView:
 
     def _crear_tabs(self, contenedor_padre):
         # Notebook con pestañas
-        notebook = ttk.Notebook(contenedor_padre, style="Custom.TNotebook")
-        notebook.pack(fill="both", expand=True)
+        self.notebook = ttk.Notebook(contenedor_padre, style="Custom.TNotebook")
+        self.notebook.pack(fill="both", expand=True)
 
         # Crear tabs
-        self._crear_tab_test(notebook)
-        self._crear_tab_resultados(notebook)
+        self._crear_tab_test(self.notebook)
+        self._crear_tab_resultados(self.notebook)
+        
+        # Vincular evento de cambio de pestaña
+        self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
 
     def _crear_tab_test(self, notebook):
         """Crea la pestaña del Test Vocacional"""
@@ -228,14 +233,32 @@ class EstudianteView:
         """Crea la pestaña de Resultados"""
         tab = tk.Frame(notebook, bg=AppStyles.CARD_BG)
         notebook.add(tab, text="📊 Resultados")
-
+        
+        # Guardar referencia al contenedor de resultados
+        self.resultados_container = tab
+        
+        # Cargar resultados inicialmente
+        self._cargar_resultados()
+    
+    def _on_tab_changed(self, event):
+        """Evento que se dispara cuando se cambia de pestaña"""
+        # Verificar si la pestaña seleccionada es la de resultados (index 1)
+        if self.notebook.index(self.notebook.select()) == 1:
+            self._cargar_resultados()
+    
+    def _cargar_resultados(self):
+        """Carga o recarga los resultados en la pestaña"""
+        # Limpiar contenido anterior
+        for widget in self.resultados_container.winfo_children():
+            widget.destroy()
+        
         # Obtener resultados del controlador
         exito, resultados = IAController.calcular_recomendaciones(self.estudiante['id'])
 
         # Si no hay resultados (test no completado), mostrar mensaje
         if not exito:
             tk.Label(
-                tab,
+                self.resultados_container,
                 text="Los resultados aparecerán aquí una vez completes el test",
                 font=(AppStyles.FONT_FAMILY, 14),
                 fg=AppStyles.TEXT_LIGHT,
@@ -244,7 +267,7 @@ class EstudianteView:
             return
 
         # Contenedor principal con padding
-        main_container = tk.Frame(tab, bg=AppStyles.CARD_BG)
+        main_container = tk.Frame(self.resultados_container, bg=AppStyles.CARD_BG)
         main_container.pack(fill="both", expand=True, padx=30, pady=10)
 
         # Contenedor de dos columnas
