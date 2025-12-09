@@ -119,8 +119,14 @@ class AdminView:
 
     def cargar_programas(self):
         programas = ProgramaController.listar_programas()
+        
+        # Formatear datos para mostrar solo nombre y descripción
+        programas_formateados = [
+            [programa['nombre_programa'], programa['descripcion']]
+            for programa in programas
+        ]
 
-        self.tabla_programas.cargar_datos(programas)
+        self.tabla_programas.cargar_datos(programas_formateados)
 
     def crear_programa(self):
         # Obtener datos del formulario
